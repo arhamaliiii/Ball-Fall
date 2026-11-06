@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BALL FALL</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#050505">
+</head>
+<body>
+
+<div class="game-container">
+
+    <!-- New luxury intro -->
+    <div id="introScreen">
+
+        <div class="intro-scene">
+
+            <div class="intro-light"></div>
+
+            <div class="intro-ball"></div>
+
+            <div class="intro-wall">
+                <div class="wall-piece piece1"></div>
+                <div class="wall-piece piece2"></div>
+                <div class="wall-piece piece3"></div>
+                <div class="wall-piece piece4"></div>
+                <div class="wall-piece piece5"></div>
+                <div class="wall-piece piece6"></div>
+            </div>
+
+        </div>
+
+        <div class="intro-content">
+            <p class="intro-label">THE ENDLESS CHALLENGE</p>
+            <h1>BALL FALL</h1>
+            <p class="intro-subtitle">ROLL. DODGE. SURVIVE.</p>
+            <button id="playBtn">START GAME</button>
+        </div>
+
+        <div class="intro-footer">
+            <span>ARCADE EXPERIENCE</span>
+            <span>01 — INFINITE</span>
+        </div>
+
+    </div>
+
+    <!-- Actual game -->
+    <div id="gameScreen" style="display:none;">
+
+        <h1>BALL FALL</h1>
+        <p class="subtitle">ROLL • DODGE • SURVIVE</p>
+
+        <div class="game-info">
+            <div>SCORE: <span id="score">0</span></div>
+            <div>BEST: <span id="best">0</span></div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <button id="startBtn">RESTART GAME</button>
+
+        <p class="controls">
+            Use mouse or arrow keys to control the ball
+        </p>
+
+    </div>
+
+</div>
+
+<script src="game.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js");
+    });
+}
+</script>
+</body>
+</html>
