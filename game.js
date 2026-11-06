@@ -62,7 +62,7 @@ canvas.addEventListener("touchstart", function(e) {
     const rect = canvas.getBoundingClientRect();
     const touchX = e.touches[0].clientX - rect.left;
 
-    ball.x = touchX * (canvas.width / rect.width);
+    mouseX = touchX * (canvas.width / rect.width);
 }, { passive: false });
 
 canvas.addEventListener("touchmove", function(e) {
@@ -71,8 +71,12 @@ canvas.addEventListener("touchmove", function(e) {
     const rect = canvas.getBoundingClientRect();
     const touchX = e.touches[0].clientX - rect.left;
 
-    ball.x = touchX * (canvas.width / rect.width);
+    mouseX = touchX * (canvas.width / rect.width);
 }, { passive: false });
+
+canvas.addEventListener("touchend", function() {
+    mouseX = null;
+});
 
 // Background
 
