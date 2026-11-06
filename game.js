@@ -55,6 +55,25 @@ canvas.addEventListener("mouseleave", () => {
     mouseX = null;
 });
 
+// Mobile touch controls
+canvas.addEventListener("touchstart", function(e) {
+    e.preventDefault();
+
+    const rect = canvas.getBoundingClientRect();
+    const touchX = e.touches[0].clientX - rect.left;
+
+    ball.x = touchX * (canvas.width / rect.width);
+}, { passive: false });
+
+canvas.addEventListener("touchmove", function(e) {
+    e.preventDefault();
+
+    const rect = canvas.getBoundingClientRect();
+    const touchX = e.touches[0].clientX - rect.left;
+
+    ball.x = touchX * (canvas.width / rect.width);
+}, { passive: false });
+
 // Background
 
 function drawBackground() {
