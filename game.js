@@ -34,7 +34,8 @@ const keys = {
     right: false
 };
 
-// Keyboard controls
+// KEYBOARD CONTROLS
+
 document.addEventListener("keydown", (e) => {
     if (e.key === "ArrowLeft" || e.key === "a") keys.left = true;
     if (e.key === "ArrowRight" || e.key === "d") keys.right = true;
@@ -45,7 +46,8 @@ document.addEventListener("keyup", (e) => {
     if (e.key === "ArrowRight" || e.key === "d") keys.right = false;
 });
 
-// Mouse controls
+// MOUSE CONTROLS
+
 canvas.addEventListener("mousemove", (e) => {
     const rect = canvas.getBoundingClientRect();
     mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
@@ -55,8 +57,9 @@ canvas.addEventListener("mouseleave", () => {
     mouseX = null;
 });
 
-// Mobile touch controls
-canvas.addEventListener("touchstart", function(e) {
+// MOBILE TOUCH CONTROLS
+
+canvas.addEventListener("touchstart", (e) => {
     e.preventDefault();
 
     const rect = canvas.getBoundingClientRect();
@@ -65,7 +68,7 @@ canvas.addEventListener("touchstart", function(e) {
     mouseX = touchX * (canvas.width / rect.width);
 }, { passive: false });
 
-canvas.addEventListener("touchmove", function(e) {
+canvas.addEventListener("touchmove", (e) => {
     e.preventDefault();
 
     const rect = canvas.getBoundingClientRect();
@@ -74,16 +77,15 @@ canvas.addEventListener("touchmove", function(e) {
     mouseX = touchX * (canvas.width / rect.width);
 }, { passive: false });
 
-canvas.addEventListener("touchend", function() {
+canvas.addEventListener("touchend", () => {
     mouseX = null;
 });
 
-// Background
+// BACKGROUND
 
 function drawBackground() {
     ctx.save();
 
-    // Deep black background
     const bg = ctx.createLinearGradient(0, 0, 0, 450);
     bg.addColorStop(0, "#050505");
     bg.addColorStop(0.5, "#111111");
@@ -92,7 +94,6 @@ function drawBackground() {
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, 800, 450);
 
-    // Dark metallic playing surface
     const arena = ctx.createLinearGradient(0, 0, 0, 450);
     arena.addColorStop(0, "#191919");
     arena.addColorStop(0.5, "#101010");
@@ -107,14 +108,18 @@ function drawBackground() {
     ctx.closePath();
     ctx.fill();
 
-    // Subtle silver side rails
+    // METALLIC SIDE WALLS
+
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = "rgba(255,255,255,0.35)";
+
     const rail = ctx.createLinearGradient(0, 0, 800, 0);
-    rail.addColorStop(0, "#555555");
-    rail.addColorStop(0.5, "#eeeeee");
-    rail.addColorStop(1, "#555555");
+    rail.addColorStop(0, "#ffffff");
+    rail.addColorStop(0.5, "#999999");
+    rail.addColorStop(1, "#ffffff");
 
     ctx.strokeStyle = rail;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 4;
 
     ctx.beginPath();
     ctx.moveTo(180, 0);
@@ -126,16 +131,14 @@ function drawBackground() {
     ctx.restore();
 }
 
-// Ball
+// BALL
 
 function drawBall() {
     ctx.save();
 
-    // Soft shadow beneath the silver ball
     ctx.shadowBlur = 18;
-    ctx.shadowColor = "rgba(220, 220, 220, 0.35)";
+    ctx.shadowColor = "rgba(220,220,220,0.35)";
 
-    // Metallic silver gradient
     const gradient = ctx.createRadialGradient(
         ball.x - 5,
         ball.y - 6,
@@ -157,48 +160,42 @@ function drawBall() {
     ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
     ctx.fill();
 
-    // Small metallic highlight
     ctx.shadowBlur = 0;
-    ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+    ctx.fillStyle = "rgba(255,255,255,0.75)";
+
     ctx.beginPath();
-    ctx.arc(
-        ball.x - 5,
-        ball.y - 6,
-        3,
-        0,
-        Math.PI * 2
-    );
+    ctx.arc(ball.x - 5, ball.y - 6, 3, 0, Math.PI * 2);
     ctx.fill();
 
-    // Fine silver outline
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+    ctx.strokeStyle = "rgba(255,255,255,0.45)";
     ctx.lineWidth = 0.8;
     ctx.stroke();
 
     ctx.restore();
 }
 
+// CREATE FALLING OBSTACLES
 
-// Create wider walls over time
 function createObstacle() {
-    const wallWidth = Math.min(180, 65 + score / 15);
-    const x = 400 + (Math.random() - 0.5) * (440 - wallWidth);
+    const wallWidth = Math.min(350, 150 + score / 15);
+
+    const leftLimit = 50;
+    const rightLimit = 750;
+
+    const x = leftLimit + Math.random() * (rightLimit - leftLimit - wallWidth);
 
     obstacles.push({
         x: x,
         y: -30,
         width: wallWidth,
-        height: 20
+        height: 10
     });
 }
-
-// Draw walls
-
+// DRAW OBSTACLES
 
 function drawObstacles() {
     ctx.save();
 
-    // Draw falling obstacles
     obstacles.forEach(o => {
         const metal = ctx.createLinearGradient(
             o.x, o.y, o.x, o.y + o.height
@@ -221,57 +218,47 @@ function drawObstacles() {
         ctx.strokeRect(o.x, o.y, o.width, o.height);
     });
 
-    // LEFT METALLIC WALL
-    const wallGradient = ctx.createLinearGradient(0, 0, 12, 0);
-    wallGradient.addColorStop(0, "#ffffff");
-    wallGradient.addColorStop(0.5, "#777777");
-    wallGradient.addColorStop(1, "#222222");
-
-    ctx.fillStyle = wallGradient;
-    ctx.fillRect(0, 0, 12, canvas.height);
-
-    // RIGHT METALLIC WALL
-    ctx.fillStyle = wallGradient;
-    ctx.fillRect(canvas.width - 12, 0, 12, canvas.height);
-
     ctx.restore();
 }
 
-// Ball movement
+// BALL MOVEMENT AND SIDE WALL COLLISION
 
 function updateBall() {
 
     // Automatic movement
     ball.x += driftDirection * driftSpeed;
 
-    // Reverse direction
-    if (ball.x >= 700) {
-        ball.x = 700;
-        driftDirection = -1;
-    }
-
-    if (ball.x <= 100) {
-        ball.x = 100;
-        driftDirection = 1;
-    }
-
-    // Mouse and touch control
+    // Mouse and touch movement
     if (mouseX !== null) {
         ball.x += (mouseX - ball.x) * 0.12;
     }
 
-    // Keyboard control
+    // Keyboard movement
     if (keys.left) ball.x -= ball.moveSpeed;
     if (keys.right) ball.x += ball.moveSpeed;
 
-    // Keep ball inside canvas
+    // Keep inside the canvas
     ball.x = Math.max(
         ball.radius,
         Math.min(canvas.width - ball.radius, ball.x)
     );
+
+    // Calculate diagonal side wall positions
+    const leftWallX = 180 - (140 * ball.y / canvas.height);
+    const rightWallX = 620 + (140 * ball.y / canvas.height);
+
+    // Touching either side wall ends the game
+    if (
+        ball.x - ball.radius <= leftWallX ||
+        ball.x + ball.radius >= rightWallX
+    ) {
+        endGame();
+        return;
+    }
 }
 
-// Wall movement and collision
+// FALLING OBSTACLE MOVEMENT AND COLLISION
+
 function updateObstacles() {
     for (let o of obstacles) {
         o.y += speed;
@@ -291,12 +278,17 @@ function updateObstacles() {
     obstacles = obstacles.filter(o => o.y < 470);
 }
 
-// Main game
+// MAIN GAME LOOP
+
 function gameLoop() {
     if (!gameRunning) return;
 
     drawBackground();
+
     updateBall();
+
+    if (!gameRunning) return;
+
     updateObstacles();
 
     if (!gameRunning) return;
@@ -318,27 +310,34 @@ function gameLoop() {
     animationId = requestAnimationFrame(gameLoop);
 }
 
-// Start
+// START GAME
+
 function startGame() {
     cancelAnimationFrame(animationId);
 
     score = 0;
     speed = 3;
     obstacles = [];
+
     ball.x = 400;
     mouseX = null;
     driftDirection = 1;
 
     gameRunning = true;
+
     scoreElement.textContent = 0;
     startBtn.textContent = "RESTART GAME";
 
     gameLoop();
 }
 
-// Game over
+// GAME OVER
+
 function endGame() {
+    if (!gameRunning) return;
+
     gameRunning = false;
+    cancelAnimationFrame(animationId);
 
     if (score > best) {
         best = score;
@@ -362,6 +361,8 @@ function endGame() {
     ctx.fillText("SCORE: " + score, 400, 250);
 }
 
+// INTRO SCREEN
+
 const introScreen = document.getElementById("introScreen");
 const gameScreen = document.getElementById("gameScreen");
 const playBtn = document.getElementById("playBtn");
@@ -373,3 +374,4 @@ playBtn.addEventListener("click", () => {
 });
 
 startBtn.addEventListener("click", startGame);
+
