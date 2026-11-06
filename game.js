@@ -198,6 +198,7 @@ function createObstacle() {
 function drawObstacles() {
     ctx.save();
 
+    // Draw falling obstacles
     obstacles.forEach(o => {
         const metal = ctx.createLinearGradient(
             o.x, o.y, o.x, o.y + o.height
@@ -214,16 +215,24 @@ function drawObstacles() {
         ctx.fillStyle = metal;
         ctx.fillRect(o.x, o.y, o.width, o.height);
 
-        // Fine metallic border
         ctx.shadowBlur = 0;
         ctx.strokeStyle = "#d0d0d0";
         ctx.lineWidth = 0.7;
         ctx.strokeRect(o.x, o.y, o.width, o.height);
-
-        // Top reflection
-        ctx.fillStyle = "rgba(255,255,255,0.55)";
-        ctx.fillRect(o.x + 1, o.y + 1, o.width - 2, 1);
     });
+
+    // LEFT METALLIC WALL
+    const wallGradient = ctx.createLinearGradient(0, 0, 12, 0);
+    wallGradient.addColorStop(0, "#ffffff");
+    wallGradient.addColorStop(0.5, "#777777");
+    wallGradient.addColorStop(1, "#222222");
+
+    ctx.fillStyle = wallGradient;
+    ctx.fillRect(0, 0, 12, canvas.height);
+
+    // RIGHT METALLIC WALL
+    ctx.fillStyle = wallGradient;
+    ctx.fillRect(canvas.width - 12, 0, 12, canvas.height);
 
     ctx.restore();
 }
