@@ -232,10 +232,10 @@ function drawObstacles() {
 
 function updateBall() {
 
-    // Smooth 180-degree side-to-side movement
+    // Automatic movement
     ball.x += driftDirection * driftSpeed;
 
-    // Reverse direction at both ends
+    // Reverse direction
     if (ball.x >= 700) {
         ball.x = 700;
         driftDirection = -1;
@@ -246,7 +246,7 @@ function updateBall() {
         driftDirection = 1;
     }
 
-    // Mouse control
+    // Mouse and touch control
     if (mouseX !== null) {
         ball.x += (mouseX - ball.x) * 0.12;
     }
@@ -255,9 +255,12 @@ function updateBall() {
     if (keys.left) ball.x -= ball.moveSpeed;
     if (keys.right) ball.x += ball.moveSpeed;
 
-    ball.x = Math.max(100, Math.min(700, ball.x));
+    // Keep ball inside canvas
+    ball.x = Math.max(
+        ball.radius,
+        Math.min(canvas.width - ball.radius, ball.x)
+    );
 }
-
 
 // Wall movement and collision
 function updateObstacles() {
